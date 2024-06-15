@@ -226,7 +226,7 @@
 			let fee = 0;
 			if (y < 25) {
 				// romawi & grading
-				fee = 15000
+				fee = 8000
 			} else if (y < 50) {
 				// honor
 				fee = 10000
@@ -235,7 +235,7 @@
 				fee = 15000
 			} else {
 				// point 100+ => immortal
-				fee = 34000
+				fee = 18000
 			}
 			return fee
 		}
@@ -356,78 +356,68 @@
 		}
 
 		$("#btn_submit").on('click', e => {
+    let tier_start = $("#tier_start").val(), star_start = $("#star_start").val(),
+        tier_end = $("#tier_end").val(), star_end = $("#star_end").val(), point_start = $("#point_start").val(), point_end = $("#point_end").val()
 
-			let tier_start = $("#tier_start").val(), star_start = $("#star_start").val(),
-				tier_end = $("#tier_end").val(), star_end = $("#star_end").val(), point_start = $("#point_start").val(), point_end = $("#point_end").val()
+    console.log(tier_start, star_start, tier_end, star_end, point_start, point_end);
+    if (tier_start === '') {
+        $("#toast-danger").addClass('show');
+        $("#toast-desc").html('Pilih Tier Sekarang');
+    } else if (tier_end === '') {
+        $("#toast-danger").addClass('show');
+        $("#toast-desc").html('Pilih Target Tier');
+    } else if (parseInt(tier_end) < parseInt(tier_start)) {
+        $("#toast-danger").addClass('show');
+        $("#toast-desc").html('Mau Nurunin Bintang Ente ?');
+    } else {
+        if (parseInt(tier_start) >= 16) {
+            star_start = point_start;
+        }
 
-			console.log(tier_start, star_start, tier_end, star_end, point_start, point_end)
-			if (tier_start === '') {
-				$("#toast-danger").addClass('show')
-				$("#toast-desc").html('Pilih Tier Sekarang')
-			} else if (tier_end === '') {
-				$("#toast-danger").addClass('show')
-				$("#toast-desc").html('Pilih Target Tier')
-			} else if (parseInt(tier_end) < parseInt(tier_start)) {
-				$("#toast-danger").addClass('show')
-				$("#toast-desc").html('Mau Nurunin Bintang Ente ?')
-			} else {
+        if (parseInt(tier_end) >= 16) {
+            star_end = point_end;
+        }
 
-				if (parseInt(tier_start) >= 16) {
-					star_start = point_start
-				}
+        let hasil = _calculate(parseInt(tier_start), parseInt(star_start), parseInt(tier_end), parseInt(star_end));
+        let tier = data.find(x => x.id === tier_end);
+        let tier_ = data.find(x => x.id === tier_start);
 
-				if (parseInt(tier_end) >= 16) {
-					star_end = point_end
-				}
+        $("#hasil_div").show();
 
-				let hasil = _calculate(parseInt(tier_start), parseInt(star_start), parseInt(tier_end), parseInt(star_end))
-				let tier = data.find(x => x.id === tier_end)
-				let tier_ = data.find(x => x.id === tier_start)
+        let mythic_name = ""; // Initialize mythic_name to an empty string to ensure it's defined.
 
-				$("#hasil_div").show()
+        if (parseInt(tier_start) >= 16 || parseInt(tier_end) >= 16) {
+            // if mythic
+            if (parseInt(tier_start) < 16) {
+                if (star_end > 100) {
+                    mythic_name = "(Immortal)";
+                } else if (star_end < 25) {
+                    mythic_name = "(Romawi)";
+                } else if (star_end < 50) {
+                    mythic_name = "(Honor)";
+                } else if (star_end < 100) {
+                    mythic_name = "(Glory)";
+                }
+            } else {
+                if (star_end > 100) {
+                    mythic_name = "(Immortal)";
+                } else if (star_end < 25) {
+                    mythic_name = "(Romawi)";
+                } else if (star_end < 50) {
+                    mythic_name = "(Honor)";
+                } else if (star_end < 100) {
+                    mythic_name = "(Glory)";
+                }
+            }
+        }
 
-				if (parseInt(tier_start) >= 16 || parseInt(tier_end) >= 16) {
-					// if mythic
-					if (parseInt(tier_start) < 16) {
-						let mythic_name
-						if (star_end > 100) {
-							mythic_name = "(Immortal)"
-						} else if (star_end < 25) {
-							mythic_name = "(Romawi)"
-						} else if (star_end < 50) {
-							mythic_name = "(Honor)"
-						} else if (star_end < 100) {
-							mythic_name = "(Glory)"
-						}
-						var text = `Dari <b class="color-highlight">${tier_.label} ★ ${star_start}</b> Ke <b class="color-highlight">${tier.label} ★ ${star_end} ${mythic_name}</b>, kamu memerlukan <b class="color-highlight">${hasil.win} Bintang</b>.
-                        <br /></br>
-                        Cukup Membayar Joki <b class="color-highlight">${formatRupiah(hasil.price)}</b> Kamu dapat mencapai Target Rank.
-                    `;
-						var text_ = `Dari ${tier_.label} ★ ${star_start} Ke ${tier.label} ★ ${star_end} ${mythic_name}, kamu memerlukan ${hasil.win} Bintang.\n
-                        Cukup Membayar Joki ${formatRupiah(hasil.price)} Kamu dapat mencapai Target Rank.
-                    `;
-					} else {
-						var text = `Dari <b class="color-highlight">${tier_.label} ★ ${star_start} ${mythic_name}</b> Ke <b class="color-highlight">${tier.label} ★ ${star_end} ${mythic_name}</b>, kamu memerlukan <b class="color-highlight">${hasil.win} Bintang</b>.
-                        <br /></br>
-                        Cukup Membayar Joki <b class="color-highlight">${formatRupiah(hasil.price)}</b> Kamu dapat mencapai Target Rank.
-                    `;
-						var text_ = `Dari ${tier_.label} ★ ${star_start} ${mythic_name} Ke ${tier.label} ★ ${star_end} ${mythic_name}, kamu memerlukan Bintang ${hasil.point}.\n
-                        Cukup Membayar Joki ${formatRupiah(hasil.price)} Kamu dapat mencapai Target Rank.
-                    `;
-					}
-				} else {
-					var text = `Dari <b class="color-highlight">${tier_.label} ★ ${star_start}</b> Ke <b class="color-highlight">${tier.label} ★ ${star_end}</b> kamu memerlukan <b class="color-highlight">${hasil.win} Bintang</b>.
+        var text = `Dari <b class="color-highlight">${tier_.label} ★ ${star_start}</b> Ke <b class="color-highlight">${tier.label} ★ ${star_end} ${mythic_name}</b>, kamu memerlukan <b class="color-highlight">${hasil.win} Bintang</b>.
                     <br /></br>
                     Cukup Membayar Joki <b class="color-highlight">${formatRupiah(hasil.price)}</b> Kamu dapat mencapai Target Rank.
                 `;
-					var text_ = `Dari ${tier_.label} ★ ${star_start} Ke ${tier.label} ★ ${star_end} kamu memerlukan ${hasil.win} Bintang.\n
-                    Cukup Membayar Joki ${formatRupiah(hasil.price)} Kamu dapat mencapai Target Rank.
-                `;
-				}
+        $('#hasil').html(text);
 
-				$('#hasil').html(text)
-
-				console.log(hasil)
-			}
-		})
+        console.log(hasil);
+    }
+});
 	</script>
