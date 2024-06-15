@@ -249,16 +249,16 @@
 
 				if (st_end > 100) {
 					// immortal
-					mawi = 25; honor = 25; glory = 50; immortal = st_end - 100; mythic = "immortal"
+					mawi = 24; honor = 25; glory = 50; immortal = st_end - 100; mythic = "immortal"
 				} else if (st_end < 25) {
 					// mawi
 					mawi = st_end - st_start; mythic = "mawi"
 				} else if (st_end < 50) {
 					// honor
-					mawi = 25; honor = st_end - 25; mythic = "honor"
+					mawi = 24; honor = st_end - 25; mythic = "honor"
 				} else if (st_end < 100) {
 					// glory
-					mawi = 25; honor = 25; glory = st_end - 50; mythic = "glory"
+					mawi = 24; honor = 25; glory = st_end - 50; mythic = "glory"
 				}
 
 				// price list mythic
@@ -286,16 +286,16 @@
 
 				if (st_end > 100) {
 					// immortal
-					mawi = 25; honor = 25; glory = 50; immortal = st_end - 100; mythic = "immortal"
+					mawi = 24; honor = 25; glory = 50; immortal = st_end - 100; mythic = "immortal"
 				} else if (st_end < 25) {
 					// mawi
 					mawi = st_end; mythic = "mawi"
 				} else if (st_end < 50) {
 					// honor
-					mawi = 25; honor = st_end - 25; mythic = "honor"
+					mawi = 24; honor = st_end - 25; mythic = "honor"
 				} else if (st_end < 100) {
 					// glory
-					mawi = 25; honor = 25; glory = st_end - 50; mythic = "glory"
+					mawi = 24; honor = 25; glory = st_end - 50; mythic = "glory"
 				}
 				let price_mythic = (mawi * 8000) + (honor * 10000) + (glory * 15000) + (immortal * 18000)
 				win += mawi + honor + glory + immortal
