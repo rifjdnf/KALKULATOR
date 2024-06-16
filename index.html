@@ -240,91 +240,86 @@
 			return fee
 		}
 
-		const _calculate = (start, st_start, end, st_end) => {
-
-			// check if start from mythic, pasti end nya juga mythic
-			if (start >= 16) {
-
-				let mawi = 0, honor = 0, glory = 0, immortal = 0, mythic = ""
-
-				if (st_end > 100) {
-					// immortal
-					mawi = 24; honor = 25; glory = 50; immortal = st_end - 100; mythic = "immortal"
-				} else if (st_end < 25) {
-					// mawi
-					mawi = st_end - st_start; mythic = "mawi"
-				} else if (st_end < 50) {
-					// honor
-					mawi = 24; honor = st_end - 25; mythic = "honor"
-				} else if (st_end < 100) {
-					// glory
-					mawi = 24; honor = 25; glory = st_end - 50; mythic = "glory"
-				}
-
-				// price list mythic
-				let price = (mawi * 8000) + (honor * 10000) + (glory * 15000) + (immortal * 18000)
-				let win = mawi + honor + glory + immortal
-
-				console.log(mawi, honor, glory, immortal, mythic, price, win);
-				return { price, win }
-
-			} else if (end >= 16) {
-
-				let bintang = 0, win = 0, point = 0
-				win += (6 - st_start)
-				let price_start = (6 - st_start) * _price(start)
-
-				let price_end = st_end * _priceM(st_end)
-
-				for (let i = (start + 1); i <= (end - 1); i++) {
-					bintang += _price(i) * 5
-					win += 5
-				}
-
-				// for mythic
-				let mawi = 0, honor = 0, glory = 0, immortal = 0, mythic = ""
-
-				if (st_end > 100) {
-					// immortal
-					mawi = 24; honor = 25; glory = 50; immortal = st_end - 100; mythic = "immortal"
-				} else if (st_end < 25) {
-					// mawi
-					mawi = st_end; mythic = "mawi"
-				} else if (st_end < 50) {
-					// honor
-					mawi = 24; honor = st_end - 25; mythic = "honor"
-				} else if (st_end < 100) {
-					// glory
-					mawi = 24; honor = 25; glory = st_end - 50; mythic = "glory"
-				}
-				let price_mythic = (mawi * 8000) + (honor * 10000) + (glory * 15000) + (immortal * 18000)
-				win += mawi + honor + glory + immortal
-
-				console.log(price_start + price_end + bintang, bintang, price_mythic)
-				return { price: price_start + price_end + bintang, win, point: st_end, a: 00 }
-
-			} else {
-				// tier start & end di bawah mythic
-				let bintang = 0, win = 0, price = 0
-				if (start === end) {
-					win += (st_end - st_start)
-					price = _price(start) * win
-				} else {
-					win += (5 - st_start)
-					let price_start = (5 - st_start) * _price(start)
-					let price_end = st_end * _price(end)
-					win += st_end
-
-					for (let i = (start + 1); i <= (end - 1); i++) {
-						bintang += _price(i) * 5
-						win += 5
-					}
-					price = price_start + price_end + bintang
-				}
-				return { price, win }
-			}
-		}
-
+const _calculate = (start, st_start, end, st_end) => {
+    const romanMap = {1: 'mawi', 2: 'honor', 3: 'glory', 4: 'immortal'};
+    
+    if (start >= 16) {
+        let mawi = 0, honor = 0, glory = 0, immortal = 0, mythic = "";
+        
+        if (st_end > 100) {
+            immortal = st_end - 100;
+            mythic = romanMap[4];
+        } else if (st_end < 25) {
+            mawi = st_end - st_start;
+            mythic = romanMap[1];
+        } else if (st_end < 50) {
+			mawi = Math.min(st_end, 25) - 25;
+         honor = Math.max(Math.min(st_end, 50) - Math.max(st_start, 25), 0);
+         mythic = romanMap[2];
+        } else if (st_end < 100) {
+            glory = st_end - 50;
+            mythic = romanMap[3];
+        }
+        
+        let price = (mawi * 8000) + (honor * 10000) + (glory * 15000) + (immortal * 18000);
+        let win = mawi + honor + glory + immortal;
+        
+        console.log(mawi, honor, glory, immortal, mythic, price, win);
+        return { price, win };
+        
+    } else if (end >= 16) {
+        let bintang = 0, win = 0, point = 0;
+        win += (6 - st_start);
+        let price_start = (6 - st_start) * _price(start);
+        let price_end = st_end * _priceM(st_end);
+        
+        for (let i = (start + 1); i <= (end - 1); i++) {
+            bintang += _price(i) * 5;
+            win += 5;
+        }
+        
+        let mawi = 0, honor = 0, glory = 0, immortal = 0, mythic = "";
+        
+        if (st_end > 100) {
+            immortal = st_end - 100;
+            mythic = romanMap[4];
+        } else if (st_end < 25) {
+            mawi = st_end;
+            mythic = romanMap[1];
+        } else if (st_end < 50) {
+            honor = st_end - 25;
+            mythic = romanMap[2];
+        } else if (st_end < 100) {
+            glory = st_end - 50;
+            mythic = romanMap[3];
+        }
+        
+        let price_mythic = (mawi * 8000) + (honor * 10000) + (glory * 15000) + (immortal * 18000);
+        win += mawi + honor + glory + immortal;
+        
+        console.log(price_start + price_end + bintang, bintang, price_mythic);
+        return { price: price_start + price_end + bintang, win, point: st_end, a: 0o0 };
+        
+    } else {
+        let bintang = 0, win = 0, price = 0;
+        if (start === end) {
+            win += (st_end - st_start);
+            price = _price(start) * win;
+        } else {
+            win += (5 - st_start);
+            let price_start = (5 - st_start) * _price(start);
+            let price_end = st_end * _price(end);
+            win += st_end;
+            
+            for (let i = (start + 1); i <= (end - 1); i++) {
+                bintang += _price(i) * 5;
+                win += 5;
+            }
+            price = price_start + price_end + bintang;
+        }
+        return { price, win };
+    }
+}
 
 		var data = [
 			{ id: "1", label: "Grand Master V" },
@@ -354,12 +349,16 @@
 
 			})
 		}
-
 		$("#btn_submit").on('click', e => {
-    let tier_start = $("#tier_start").val(), star_start = $("#star_start").val(),
-        tier_end = $("#tier_end").val(), star_end = $("#star_end").val(), point_start = $("#point_start").val(), point_end = $("#point_end").val()
+    let tier_start = $("#tier_start").val(), 
+        star_start = $("#star_start").val(),
+        tier_end = $("#tier_end").val(), 
+        star_end = $("#star_end").val(), 
+        point_start = $("#point_start").val(), 
+        point_end = $("#point_end").val();
 
     console.log(tier_start, star_start, tier_end, star_end, point_start, point_end);
+
     if (tier_start === '') {
         $("#toast-danger").addClass('show');
         $("#toast-desc").html('Pilih Tier Sekarang');
@@ -368,7 +367,7 @@
         $("#toast-desc").html('Pilih Target Tier');
     } else if (parseInt(tier_end) < parseInt(tier_start)) {
         $("#toast-danger").addClass('show');
-        $("#toast-desc").html('Mau Nurunin Bintang Ente ?');
+        $("#toast-desc").html('Mau Nurunin Bintang Ente?');
     } else {
         if (parseInt(tier_start) >= 16) {
             star_start = point_start;
@@ -384,21 +383,10 @@
 
         $("#hasil_div").show();
 
-        let mythic_name = ""; // Initialize mythic_name to an empty string to ensure it's defined.
+        let mythic_name = "";
 
         if (parseInt(tier_start) >= 16 || parseInt(tier_end) >= 16) {
-            // if mythic
             if (parseInt(tier_start) < 16) {
-                if (star_end > 100) {
-                    mythic_name = "(Immortal)";
-                } else if (star_end < 25) {
-                    mythic_name = "(Romawi)";
-                } else if (star_end < 50) {
-                    mythic_name = "(Honor)";
-                } else if (star_end < 100) {
-                    mythic_name = "(Glory)";
-                }
-            } else {
                 if (star_end > 100) {
                     mythic_name = "(Immortal)";
                 } else if (star_end < 25) {
@@ -411,13 +399,11 @@
             }
         }
 
-        var text = `Dari <b class="color-highlight">${tier_.label} ★ ${star_start}</b> Ke <b class="color-highlight">${tier.label} ★ ${star_end} ${mythic_name}</b>, kamu memerlukan <b class="color-highlight">${hasil.win} Bintang</b>.
-                    <br /></br>
-                    Cukup Membayar Joki <b class="color-highlight">${formatRupiah(hasil.price)}</b> Kamu dapat mencapai Target Rank.
-                `;
+        var text = `Dari <b class="color-highlight">${tier_.label} ★ ${star_start}</b> Ke <b class="color-highlight">${tier.label} ★ ${star_end} ${mythic_name}</b>, kamu memerlukan <b class="color-highlight">${hasil.win} Bintang</b>.<br /></br>Cukup Membayar Joki <b class="color-highlight">${formatRupiah(hasil.price)}</b> Kamu dapat mencapai Target Rank.`;
         $('#hasil').html(text);
 
         console.log(hasil);
     }
 });
+
 	</script>
